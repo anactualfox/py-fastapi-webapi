@@ -2,18 +2,19 @@ from typing import List
 from fastapi import FastAPI, HTTPException, status
 from uuid import UUID, uuid4
 from fastapi.responses import HTMLResponse
-from models import User
+from models.models import User
+
 
 app = FastAPI()
 
 db: List[User] = [
     User(
-        id=uuid4(),
+        id="2f260067-b225-4dd3-830d-d8f27c794e3a",
         first_name="John",
         last_name="Ed"
     ),
     User(
-        id=uuid4(),
+        id="2d77d74b-fbad-4f30-a302-782c05799f9a",
         first_name="Emily",
         last_name="Ane"
     ),
