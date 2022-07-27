@@ -1,7 +1,6 @@
-from http.client import HTTPException
 from typing import List
-from fastapi import FastAPI, status
-from uuid import UUID
+from fastapi import FastAPI, HTTPException, status
+from uuid import UUID, uuid4
 from fastapi.responses import HTMLResponse
 from models import User
 
@@ -9,10 +8,12 @@ app = FastAPI()
 
 db: List[User] = [
     User(
+        id=uuid4(),
         first_name="John",
         last_name="Ed"
     ),
     User(
+        id=uuid4(),
         first_name="Emily",
         last_name="Ane"
     ),
@@ -47,17 +48,20 @@ async def get_user_async(id: UUID):
         if user.id == id:
             return user
 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                        detail="User not found")
 
 
-@app.put("api/v1/users/", status_code=status.HTTP_204_NO_CONTENT)
+@app.put("/api/v1/users/", status_code=status.HTTP_204_NO_CONTENT)
 async def update_user_async(user: User):
     for db_user in db:
-        if db_user == user.id:
+        if db_user.id == user.id:
             db.remove(db_user)
             db.append(user)
+            return
 
-    raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+    raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                        detail="User does not exist")
 
 
 @app.delete("/api/v1/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -67,4 +71,5 @@ async def delete_user_async(id: UUID):
             db.remove(user)
             return
 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                        detail="User not found")
